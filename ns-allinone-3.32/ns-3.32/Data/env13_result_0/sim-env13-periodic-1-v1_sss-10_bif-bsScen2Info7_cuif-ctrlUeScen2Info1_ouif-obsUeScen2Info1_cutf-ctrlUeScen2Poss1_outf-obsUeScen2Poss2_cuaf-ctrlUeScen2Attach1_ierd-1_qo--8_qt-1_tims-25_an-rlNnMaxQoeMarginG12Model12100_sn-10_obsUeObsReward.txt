@@ -1,0 +1,1 @@
+simTime	ueIndex	cellIndex	bitrateDemand	rsrq	newDataRatio	nrUeForDemandType0	nrUeForDemandType1	nrUeForDemandType2	nrUeForDemandType3	nrUeForDemandType4	mcs	qoeScore	

@@ -1,0 +1,523 @@
+
+#include "ns3/core-module.h"
+#include "ns3/lte-module.h"
+#include "ns3/node-container.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/internet-module.h"
+#include "ns3/point-to-point-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/netanim-module.h"
+#include <ns3/mobility-module.h>
+#include "ns3/buildings-module.h"
+#include "ns3/buildings-helper.h"
+// #include "ns3/mobility-building-info.h"
+//#include "random-walk-2d-mobility-model.h"
+
+using namespace ns3;
+
+uint32_t nrEnb = 1;
+uint32_t nrUe = 4;              // num of node
+std::vector<int> rxBytes(nrUe); // n_user
+std::vector<int> txBytes(nrEnb);
+uint16_t link[80];
+uint32_t nrPacketSend[28] = {};
+uint32_t nrPacketReceive[28] = {};
+uint32_t nrEnbServe[28] = {};
+// helper
+Ptr<LteHelper> lteHelper = CreateObject<LteHelper>();
+Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper>();
+int flag = 0;
+double
+GetSinrDbFromRsrqDb(double rsrqDb)
+{
+  double rsrq = std::pow(10.0, rsrqDb / 10.0);
+  double sinr = 1.0 / (1.0 / (2.0 * rsrq) - 1.0);
+  double sinrDb = 10.0 * std::log10(sinr);
+  return sinrDb;
+}
+uint32_t
+ConvertContextToNodeId(std::string context)
+{
+  std::string sub = context.substr(10);
+  uint32_t pos = sub.find("/Device");
+  uint32_t nodeId = atoi(sub.substr(0, pos).c_str());
+  return nodeId;
+}
+void LteUePhyReportUeMeasurementsCb(std::string context, uint16_t rnti, uint16_t cellId, double rsrp, double rsrq, bool isServingCell, uint8_t componentCarrierId)
+{
+  uint32_t nodeId = ConvertContextToNodeId(context);
+  if (std::isnan(rsrp) != true and std::isnan(rsrq) != true)
+  {
+    std::cout << "nodeId : " << nodeId << ", cellId" << cellId << ", rsrp " << rsrp << ", rsrq " << rsrq << ", sinr " << GetSinrDbFromRsrqDb(rsrq) << std::endl;
+  }
+}
+void TraceRx(uint32_t index, Ptr<const Packet> p)
+{
+  if (Simulator::Now().GetSeconds() >= 2)
+  {
+    rxBytes[index] += p->GetSize();
+    nrPacketReceive[link[index]] += 1;
+  }
+  //  std::cout << rxBytes[index] << std::endl;
+  //  std::cout << Simulator::Now() << "sec. throughput: " << rxBytes[index]*8.0 << "bps" << std::endl;
+}
+void TraceTx(uint32_t index, Ptr<const Packet> p)
+{
+  if (Simulator::Now().GetSeconds() >= 2)
+  {
+    txBytes[index] += p->GetSize();
+    nrPacketSend[link[index]] += 1;
+  }
+}
+void resetRxBytes(uint32_t index)
+{
+  rxBytes[index] = 0;
+}
+void resetTxBytes(uint32_t index)
+{
+  txBytes[index] = 0;
+}
+
+void acc(uint32_t index)
+{
+  // std::cout << Simulator::Now().GetSeconds() << "sec. " << index << "th sink has throughput: " << rxBytes[index]*8.0 << "bps." << std::endl;
+
+  resetRxBytes(index);
+}
+void acc2(uint32_t index)
+{
+  // std::cout << Simulator::Now().GetSeconds() << "sec. " << index << "th sink has send: " << txBytes[index]*8.0 << "bps." << std::endl;
+
+  resetTxBytes(index);
+}
+/*
+void NotifyConnectionEstablishedEnb(unsigned short index){
+  std::cout << "enb" << index << " is connection" << std::endl;
+}
+void NotifyConnectionEstablishedUe(unsigned short index){
+  std::cout << "ue" << index << " is connection" << std::endl;
+}
+*/
+
+void NotifyConnectionEstablishedUe(std::string context,
+                                   uint64_t imsi,
+                                   uint16_t cellid,
+                                   uint16_t rnti)
+{
+  std::cout << Simulator::Now().GetSeconds() << " " << context
+            << " UE IMSI " << imsi
+            << ": connected to CellId " << cellid
+            << " with RNTI " << rnti
+            << std::endl;
+
+  link[imsi - 1] = cellid;
+  nrEnbServe[cellid]++;
+}
+void NotifyHandoverStartUe(std::string context,
+                           uint64_t imsi,
+                           uint16_t cellid,
+                           uint16_t rnti,
+                           uint16_t targetCellId)
+{
+  std::cout << Simulator::Now().GetSeconds() << " " << context
+            << " UE IMSI " << imsi
+            << ": previously connected to CellId " << cellid
+            << " with RNTI " << rnti
+            << ", doing handover to CellId " << targetCellId
+            << std::endl;
+}
+
+void NotifyHandoverEndOkUe(std::string context,
+                           uint64_t imsi,
+                           uint16_t cellid,
+                           uint16_t rnti)
+{
+  std::cout << Simulator::Now().GetSeconds() << " " << context
+            << " UE IMSI " << imsi
+            << ": successful handover to CellId " << cellid
+            << " with RNTI " << rnti
+            << std::endl;
+}
+
+void NotifyConnectionEstablishedEnb(std::string context,
+                                    uint64_t imsi,
+                                    uint16_t cellid,
+                                    uint16_t rnti)
+{
+  std::cout << Simulator::Now().GetSeconds() << " " << context
+            << " eNB CellId " << cellid
+            << ": successful connection of UE with IMSI " << imsi
+            << " RNTI " << rnti
+            << std::endl;
+}
+
+void NotifyHandoverStartEnb(std::string context,
+                            uint64_t imsi,
+                            uint16_t cellid,
+                            uint16_t rnti,
+                            uint16_t targetCellId)
+{
+  std::cout << Simulator::Now().GetSeconds() << " " << context
+            << " eNB CellId " << cellid
+            << ": start handover of UE with IMSI " << imsi
+            << " RNTI " << rnti
+            << " to CellId " << targetCellId
+            << std::endl;
+}
+
+void NotifyHandoverEndOkEnb(std::string context,
+                            uint64_t imsi,
+                            uint16_t cellid,
+                            uint16_t rnti)
+{
+  std::cout << Simulator::Now().GetSeconds() << " " << context
+            << " eNB CellId " << cellid
+            << ": completed handover of UE with IMSI " << imsi
+            << " RNTI " << rnti
+            << std::endl;
+}
+void PrintGnuplottableBuildingListToFile(std::string filename)
+{
+  std::ofstream outFile;
+  outFile.open(filename.c_str(), std::ios_base::out | std::ios_base::trunc);
+  if (!outFile.is_open())
+  {
+    // NS_LOG_ERROR("Can't open file " << filename);
+    return;
+  }
+  uint32_t index = 0;
+  for (BuildingList::Iterator it = BuildingList::Begin(); it != BuildingList::End(); ++it)
+  {
+    ++index;
+    Box box = (*it)->GetBoundaries();
+    outFile << "set object " << index
+            << " rect from " << box.xMin << "," << box.yMin
+            << " to " << box.xMax << "," << box.yMax
+            << std::endl;
+  }
+}
+
+int main(int argc, char *argv[])
+{
+  std::cout << "123";
+  Config::SetDefault("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue(160));
+  // log
+  lteHelper->SetEpcHelper(epcHelper);
+  // node
+  Ptr<Node> remoteHost = CreateObject<Node>();
+  Ptr<Node> pgw = epcHelper->GetPgwNode();
+
+  lteHelper->SetAttribute("PathlossModel", StringValue("ns3::HybridBuildingsPropagationLossModel"));
+  // lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisPropagationLossModel"));
+  NodeContainer enbNodes;
+  enbNodes.Create(nrEnb);
+
+  NodeContainer ueNodes;
+  ueNodes.Create(nrUe);
+
+  // uint32_t numBuildingsX = 10;
+  // uint32_t numBuildingsY = 10;
+  // double buildingSizeX = 100;       // m
+  // double buildingSizeY = 50; // m
+  // double buildingHeight = 10; // m
+  //  double streetWidth = 25; // m
+
+  std::vector<Ptr<Building>> buildingVector;
+  // for (uint32_t buildingIdX = 0; buildingIdX < numBuildingsX; ++buildingIdX)
+  //   {
+  //     for (uint32_t buildingIdY = 0; buildingIdY < numBuildingsY; ++buildingIdY)
+  //       {
+  //         Ptr < Building > building;
+  //         building = CreateObject<Building> ();
+
+  //         building->SetBoundaries (Box (buildingIdX * (buildingSizeX + streetWidth),
+  //                                       buildingIdX * (buildingSizeX + streetWidth) + buildingSizeX,
+  //                                       buildingIdY * (buildingSizeY + streetWidth),
+  //                                       buildingIdY * (buildingSizeY + streetWidth) + buildingSizeY,
+  //                                       0.0, buildingHeight));
+  //         building->SetNRoomsX (1);
+  //         building->SetNRoomsY (1);
+  //         building->SetNFloors (1);
+  //         buildingVector.push_back (building);
+  //       }
+  //   }
+
+  // mobility
+  MobilityHelper mobility;
+  // set gateway
+
+  Ptr<ListPositionAllocator> pgwPositionAlloc = CreateObject<ListPositionAllocator>();
+  pgwPositionAlloc->Add(Vector(10.0, 50.0, 0.0));
+  mobility.SetPositionAllocator(pgwPositionAlloc);
+  mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+
+  mobility.Install(pgw);
+
+  // set remote host
+
+  Ptr<ListPositionAllocator> remoteHostPositionAlloc = CreateObject<ListPositionAllocator>();
+  remoteHostPositionAlloc->Add(Vector(0.0, 50.0, 0.0));
+  mobility.SetPositionAllocator(remoteHostPositionAlloc);
+  mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+  mobility.Install(remoteHost);
+  // set enb node
+  //  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+  //                                 "MinX", DoubleValue (20.0),
+  //                                 "MinY", DoubleValue (15.0),
+  //                                 "DeltaX", DoubleValue (40.0),
+  //                                 "DeltaY", DoubleValue (50.0),
+  //                                 "GridWidth", UintegerValue (3),
+  //                                 "LayoutType", StringValue ("RowFirst"));
+  //  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+
+  mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+  mobility.Install(enbNodes);
+
+  // set ue node
+  //  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
+  //                                 "MinX", DoubleValue (50.0),
+  //                                 "MinY", DoubleValue (5.0),
+  //                                 "DeltaX", DoubleValue (100000000000.0),
+  //                                 "DeltaY", DoubleValue (10000000000.0),
+  //                                 "GridWidth", UintegerValue (5),
+  //                                 "LayoutType", StringValue ("RowFirst"));
+  //  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+  mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+  mobility.Install(ueNodes);
+
+  // internet
+
+  InternetStackHelper stack;
+  stack.Install(remoteHost);
+  stack.Install(ueNodes);
+
+  // p2p
+  PointToPointHelper p2p;
+  p2p.SetDeviceAttribute("DataRate", DataRateValue(DataRate("1000Gb/s")));
+  p2p.SetDeviceAttribute("Mtu", UintegerValue(1500));
+  p2p.SetChannelAttribute("Delay", TimeValue(MilliSeconds(10)));
+  NetDeviceContainer p2pDevices = p2p.Install(remoteHost, pgw);
+  NetDeviceContainer enbLteDevices = lteHelper->InstallEnbDevice(enbNodes);
+  NetDeviceContainer ueLteDevices = lteHelper->InstallUeDevice(ueNodes);
+
+  // address
+  Ipv4AddressHelper address;
+  address.SetBase("1.0.0.0", "255.0.0.0");
+  Ipv4InterfaceContainer p2pIpInterfaces = address.Assign(p2pDevices);
+  Ipv4InterfaceContainer ueIpInterfaces = epcHelper->AssignUeIpv4Address(ueLteDevices);
+
+  // routing
+  Ipv4StaticRoutingHelper routing;
+  Ptr<Ipv4StaticRouting> remoteHostStaticRouting = routing.GetStaticRouting(remoteHost->GetObject<Ipv4>());
+  remoteHostStaticRouting->AddNetworkRouteTo(Ipv4Address("7.0.0.0"), Ipv4Mask("255.0.0.0"), 1);
+
+  for (uint32_t i = 0; i < ueNodes.GetN(); ++i)
+  {
+    Ptr<Node> ueNode = ueNodes.Get(i);
+    Ptr<Ipv4StaticRouting> ueStaticRouting = routing.GetStaticRouting(ueNode->GetObject<Ipv4>());
+    ueStaticRouting->SetDefaultRoute(epcHelper->GetUeDefaultGatewayAddress(), 1);
+  }
+
+  // Set ENBs position and power
+  std::map<std::uint16_t, double> enb_x;
+  std::map<std::uint16_t, double> enb_y;
+  std::map<std::uint16_t, double> enb_z;
+  std::map<std::uint16_t, double> enb_txPowerDbm;
+  std::ifstream EnbdataFile("bsScen2Info7.tsv");
+  std::string str;
+  std::getline(EnbdataFile, str);
+  std::uint16_t enbIndex = 0;
+  while (!EnbdataFile.eof())
+  {
+    std::getline(EnbdataFile, str);
+    std::stringstream buffer(str);
+    std::string temp;
+    std::vector<double> values;
+
+    while (getline(buffer, temp, '\t'))
+    {
+      values.push_back(::strtod(temp.c_str(), 0));
+    }
+    // std::cout << values[0] << std::endl;
+    enb_x[enbIndex] = values[0];
+    enb_y[enbIndex] = values[1];
+    enb_z[enbIndex] = values[2];
+    enbIndex++;
+  }
+  EnbdataFile.close();
+
+  Ptr<Building> building;
+  building = CreateObject<Building>();
+  building->SetBoundaries(Box(0, 10, 0, 10, 0, 20));
+  building->SetBuildingType(Building::Residential);
+  building->SetExtWallsType(Building::ConcreteWithWindows);
+  building->SetNFloors(3);
+  PrintGnuplottableBuildingListToFile("buildings.txt");
+
+  for (int i = 0; i < (int)nrEnb; i++)
+  {
+    Ptr<ConstantPositionMobilityModel> mm = enbNodes.Get(i)->GetObject<ConstantPositionMobilityModel>();
+    mm->SetPosition(Vector(enb_x[i], enb_y[i], enb_z[i]));
+
+    Ptr<LteEnbNetDevice> lteEnbDev = enbLteDevices.Get(i)->GetObject<LteEnbNetDevice>();
+    Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy();
+    enbPhy->SetAttribute("TxPower", DoubleValue(enb_txPowerDbm[i]));
+    enbPhy->SetAttribute("NoiseFigure", DoubleValue(5.0));
+  }
+  BuildingsHelper::Install(enbNodes);
+
+  // Set UEs' position and power
+
+  std::map<std::uint16_t, double> ue_x;
+  std::map<std::uint16_t, double> ue_y;
+  std::ifstream dataFile("obsUeScen2Poss2.tsv");
+  std::getline(dataFile, str);
+  std::uint16_t ueIndex = 0;
+  while (!dataFile.eof())
+  {
+    std::getline(dataFile, str);
+    std::stringstream buffer(str);
+    std::string temp;
+    std::vector<double> values;
+
+    while (getline(buffer, temp, '\t'))
+    {
+      values.push_back(::strtod(temp.c_str(), 0));
+    }
+    // std::cout << values[0] << std::endl;
+    ue_x[ueIndex] = values[0];
+    ue_y[ueIndex] = values[1];
+    ueIndex++;
+  }
+  dataFile.close();
+
+  // Set UEs' position and power
+  for (int i = 0; i < (int)nrUe; i++)
+  {
+    Ptr<ConstantPositionMobilityModel> mm = ueNodes.Get(i)->GetObject<ConstantPositionMobilityModel>();
+    mm->SetPosition(Vector(ue_x[i] + 1, ue_y[i] + 1, 0.0));
+  }
+  BuildingsHelper::Install(ueNodes);
+
+  // attach
+  //  lteHelper->AttachToClosestEnb(ueLteDevices, enbLteDevices);
+  lteHelper->Attach(ueLteDevices, enbLteDevices.Get(0));
+
+  // application
+  ApplicationContainer serverApps;
+  ApplicationContainer clientApps;
+  for (uint32_t i = 0; i < ueNodes.GetN(); ++i)
+  {
+    UdpServerHelper server(9);
+    serverApps.Add(server.Install(ueNodes.Get(i)));
+    UdpEchoClientHelper client(ueIpInterfaces.GetAddress(i), 9);
+    // UdpClientHelper client (ueIpInterfaces.GetAddress (i), 9);
+    client.SetAttribute("MaxPackets", UintegerValue(1000));
+    client.SetAttribute("Interval", TimeValue(Seconds(0.1)));
+    client.SetAttribute("PacketSize", UintegerValue(1024));
+    clientApps.Add(client.Install(remoteHost));
+  }
+  serverApps.Start(Seconds(1.0));
+  serverApps.Stop(Seconds(5.0));
+  clientApps.Start(Seconds(2.0));
+  clientApps.Stop(Seconds(5.0));
+
+  for (uint32_t index = 0; index < clientApps.GetN(); ++index)
+  {
+    clientApps.Get(index)->TraceConnectWithoutContext("Tx", MakeBoundCallback(&TraceTx, index));
+  }
+  for (uint32_t index = 0; index < serverApps.GetN(); ++index)
+  {
+    serverApps.Get(index)->TraceConnectWithoutContext("Rx", MakeBoundCallback(&TraceRx, index));
+  }
+
+  // for (uint32_t index=0; index<serverApps.GetN(); ++index){
+  //     Simulator::Schedule(Seconds(5), &resetRxBytes, index);
+  //     //Simulator::Schedule(Seconds(9), &acc, index);
+  // }
+
+  for (uint32_t time = 1; time <= 5; ++time)
+  {
+
+    for (uint32_t index = 0; index < serverApps.GetN(); ++index)
+    {
+      Simulator::Schedule(Seconds(time), &acc, index);
+    }
+    for (uint32_t index = 0; index < clientApps.GetN(); ++index)
+    {
+
+      Simulator::Schedule(Seconds(time), &acc2, index);
+    }
+  }
+
+  // std::cout << "-----" << clientApps.GetN() << "-----------" << std::endl;
+
+  // handover between two enb
+
+  // trace
+  lteHelper->EnableTraces();
+
+  p2p.EnablePcapAll("my-lte");
+
+  // Add X2 interface
+  lteHelper->AddX2Interface(enbNodes);
+
+  lteHelper->EnablePhyTraces();
+  lteHelper->EnableMacTraces();
+  Ptr<RadioBearerStatsCalculator> rlcStats = lteHelper->GetRlcStats();
+  rlcStats->SetAttribute("EpochDuration", TimeValue(Seconds(0.05)));
+  Ptr<RadioBearerStatsCalculator> pdcpStats = lteHelper->GetPdcpStats();
+  pdcpStats->SetAttribute("EpochDuration", TimeValue(Seconds(0.05)));
+
+  // animation
+  AnimationInterface anim("testError.xml");
+  anim.UpdateNodeColor(remoteHost, 255, 0, 0);
+  anim.UpdateNodeSize(remoteHost->GetId(), 5.0, 5.0);
+  anim.UpdateNodeColor(pgw, 255, 255, 0);
+  anim.UpdateNodeSize(pgw->GetId(), 5.0, 5.0);
+  for (uint32_t i = 0; i < enbNodes.GetN(); ++i)
+  {
+    anim.UpdateNodeColor(enbNodes.Get(i), 0, 255, 0);
+    anim.UpdateNodeSize(enbNodes.Get(i)->GetId(), 5.0, 5.0);
+  }
+  for (uint32_t i = 0; i < ueNodes.GetN(); ++i)
+  {
+    anim.UpdateNodeColor(ueNodes.Get(i), 0, 0, 255);
+    anim.UpdateNodeSize(ueNodes.Get(i)->GetId(), 5.0, 5.0);
+  }
+
+  // connect custom trace sinks for RRC connection establishment and handover notification
+  Config::Connect("/NodeList/*/DeviceList/*/LteEnbRrc/ConnectionEstablished",
+                  MakeCallback(&NotifyConnectionEstablishedEnb));
+  Config::Connect("/NodeList/*/DeviceList/*/LteUeRrc/ConnectionEstablished",
+                  MakeCallback(&NotifyConnectionEstablishedUe));
+  Config::Connect("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverStart",
+                  MakeCallback(&NotifyHandoverStartEnb));
+  Config::Connect("/NodeList/*/DeviceList/*/LteUeRrc/HandoverStart",
+                  MakeCallback(&NotifyHandoverStartUe));
+  Config::Connect("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverEndOk",
+                  MakeCallback(&NotifyHandoverEndOkEnb));
+  Config::Connect("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
+                  MakeCallback(&NotifyHandoverEndOkUe));
+  Config::Connect("/NodeList/*/DeviceList/*/$ns3::LteUeNetDevice/ComponentCarrierMapUe/*/LteUePhy/ReportUeMeasurements", MakeCallback(&LteUePhyReportUeMeasurementsCb));
+
+  // simulation
+  Simulator::Stop(Seconds(5));
+  Simulator::Run();
+
+  Simulator::Destroy();
+  // for(int i = 0; i <  28 ;i ++){
+  //   std::cout << "Enb" << i << std::endl;
+  //   std::cout << "Error rate :\t" << (float)(nrPacketSend[i] - nrPacketReceive [i]) / nrPacketSend[i] << std::endl;
+  //   std::cout << "numbers of Serving ue: " << nrEnbServe[i] << std::endl;
+  //   // std::cout << "served by enb :" << link[i] << std::endl;
+  //   std::cout << "------------------------------" << std::endl;
+
+  //  }
+  // for(int i = 0; i< 80; i++){
+  //   // std::cout << "Ue" << i << std::endl;
+  //   std::cout << "served by enb :" << link[i] << std::endl;
+  //   // std::cout << "------------------------------" << std::endl;
+  // }
+  return 0;
+}

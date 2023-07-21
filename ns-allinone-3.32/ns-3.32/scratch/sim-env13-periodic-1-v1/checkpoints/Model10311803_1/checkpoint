@@ -1,0 +1,2 @@
+model_checkpoint_path: "bs17_checkpoint"
+all_model_checkpoint_paths: "bs17_checkpoint"

@@ -1,0 +1,2 @@
+model_checkpoint_path: "bs27_checkpoint"
+all_model_checkpoint_paths: "bs27_checkpoint"
