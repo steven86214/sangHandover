@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2021-12-01 10:50:56 by Eclipse SUMO netedit Version v1_11_0+0215-ec00761
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="bus" vClass="bus"/>
+    <vType id="tram" vClass="tram"/>
+
+    
+<route id="carRoute0" edges="39271417#0 -E3 27077570 E0 " repeat="1" color="green" ></route>
+<vehicle id="0" depart="0" route="carRoute0"/>
+
+<route id="carRoute1" edges="-E3 -E22 -E25 E28 -E23 -39271417#1 " repeat="1" color="green" ></route>
+<vehicle id="1" depart="0" route="carRoute1"/>
+
+<route id="carRoute2" edges="-136038029#1 -136038029#0 " repeat="1" color="green" ></route>
+<vehicle id="2" depart="0" route="carRoute2"/>
+
+<route id="carRoute3" edges="136038029#0 136038029#1" repeat="1" color="green" ></route>
+<vehicle id="3" depart="0" route="carRoute3"/>
+
+<route id="carRoute4" edges="-137550174 137550174" repeat="1" color="green" ></route>
+<vehicle id="4" depart="0" route="carRoute4"/>
+
+<route id="carRoute5" edges="39271417#1 E23 -E28 E25 E22 E3" repeat="1" color="green" ></route>
+<vehicle id="5" depart="0" route="carRoute5"/>
+
+<route id="carRoute6" edges="137541261 -137541261" repeat="1" color="green" ></route>
+<vehicle id="6" depart="0" route="carRoute6"/>
+
+<route id="carRoute7" edges="137541261 -E27 E26 27077573 -27077573 -E26 E27 -137541261" repeat="1" color="green" ></route>
+<vehicle id="7" depart="0" route="carRoute7"/>
+
+<route id="carRoute8" edges="-293795466#0 293795466#0" repeat="1" color="green" ></route>
+<vehicle id="8" depart="0" route="carRoute8"/>
+
+<route id="carRoute9" edges="-293795466#1 -E21 26813209#1 68248978 -E24 -E25 E26 137536159#0" repeat="1" color="green" ></route>
+<vehicle id="9" depart="0" route="carRoute9"/>
+
+<route id="carRoute10" edges="293795466#1 -137536159#0 -E26 E25 E24 -68248978 -26813209#1 E21" repeat="1" color="green" ></route>
+<vehicle id="10" depart="0" route="carRoute10"/>
+
+<route id="carRoute11" edges="-26813209#0 -293795460 -293795459 -150217424#2 -E33 -137536159#2 -137536159#1 -293795466#1 -E21" repeat="1" color="green" ></route>
+<vehicle id="11" depart="0" route="carRoute11"/>
+
+<route id="carRoute12" edges="-E32 E31 -137536159#3 -137536159#2 27077592#0 27077592#1" repeat="1" color="green" ></route>
+<vehicle id="12" depart="0" route="carRoute12"/>
+
+<route id="carRoute13" edges="-27077592#1 -27077592#0 137536159#2 137536159#3 -E31 E32" repeat="1" color="green" ></route>
+<vehicle id="13" depart="0" route="carRoute13"/>
+
+<route id="carRoute14" edges="-153023304#2 -40385969#1 -40385969#0 27077559 150217424#2 293795459 293795460" repeat="1" color="green" ></route>
+<vehicle id="14" depart="0" route="carRoute14"/>
+
+<route id="carRoute15" edges="-293795460 -293795459 -150217424#2 -27077559 40385969#0 40385969#1 153023304#2" repeat="1" color="green" ></route>
+<vehicle id="15" depart="0" route="carRoute15"/>
+
+<route id="carRoute16" edges="-27077559 -E15 E16 -137536159#3 E33" repeat="1" color="green" ></route>
+<vehicle id="16" depart="0" route="carRoute16"/>
+
+<route id="carRoute17" edges="-E33 137536159#3 -E16 E15 27077559" repeat="1" color="green" ></route>
+<vehicle id="17" depart="0" route="carRoute17"/>
+
+<route id="carRoute18" edges="137536159#7 -137536159#7" repeat="1" color="green" ></route>
+<vehicle id="18" depart="0" route="carRoute18"/>
+
+<route id="carRoute19" edges="27077563#0 27077563#1 27077563#2 27077563#3 -27077563#3 -27077563#2 -27077563#1 -27077563#0" repeat="1" color="green" ></route>
+<vehicle id="19" depart="0" route="carRoute19"/>
+
+<route id="carRoute20" edges="E17 -135933564#0 -E18 27077563#2" repeat="1" color="green" ></route>
+<vehicle id="20" depart="0" route="carRoute20"/>
+
+<route id="carRoute21" edges="153004139#0 E34 E35 153004139#4 153004139#5 -153004139#5 -153004139#4 -E35 -E34 -153004139#0" repeat="1" color="green" ></route>
+<vehicle id="21" depart="0" route="carRoute21"/>
+
+<route id="carRoute22" edges="153004139#0 E34 E13 E14 E16 -E31 137536159#6 27077563#0 27077563#1 27077563#2 E17 135933564#1 " repeat="1" color="green" ></route>
+<vehicle id="22" depart="0" route="carRoute22"/>
+
+<route id="carRoute23" edges="-27077558#1 -27077558#0 40385969#1 -E36" repeat="1" color="green" ></route>
+<vehicle id="23" depart="0" route="carRoute23"/>
+
+<route id="carRoute24" edges="E36 -135701426#2 -135701426#1 -135701426#0 -27077600 27077599#0" repeat="1" color="green" ></route>
+<vehicle id="24" depart="0" route="carRoute24"/>
+
+<route id="carRoute25" edges="127908451#1 24329084 26203520 -26203520 -24329084 -127908451#1" repeat="1" color="green" ></route>
+<vehicle id="25" depart="0" route="carRoute25"/>
+
+<route id="carRoute26" edges="-E35 E13 E14 E15 40385969#0 27077558#0 27077558#1 -27077599#0 -153004139#5 -153004139#4" repeat="1" color="green" ></route>
+<vehicle id="26" depart="0" route="carRoute26"/>
+
+<route id="carRoute27" edges="E8 E9 E10 -E7 E6 153018594 153018597 -153018597 -153018594 -E6 E7 -E10 -E9 -E8 -E11 E11" repeat="1" color="green" ></route>
+<vehicle id="27" depart="0" route="carRoute27"/>
+
+<route id="carRoute28" edges="153018597 39271417#0 39271417#1 -39271417#1 -39271417#0 -153018597" repeat="1" color="green" ></route>
+<vehicle id="28" depart="0" route="carRoute28"/>
+
+<route id="carRoute29" edges="-E6 E7 -E10 -E9 -E8 E8 E9 E10 -E7 E6" repeat="1" color="green" ></route>
+<vehicle id="29" depart="0" route="carRoute29"/>
+
+<route id="carRoute30" edges="39271417#0 -E3 27077570 E0 " repeat="1" color="green" ></route>
+<vehicle id="30" depart="50" route="carRoute30"/>
+
+<route id="carRoute31" edges="-E3 -E22 -E25 E28 -E23 -39271417#1 " repeat="1" color="green" ></route>
+<vehicle id="31" depart="50" route="carRoute31"/>
+
+<route id="carRoute32" edges="-136038029#1 -136038029#0 " repeat="1" color="green" ></route>
+<vehicle id="32" depart="50" route="carRoute32"/>
+
+<route id="carRoute33" edges="136038029#0 136038029#1" repeat="1" color="green" ></route>
+<vehicle id="33" depart="50" route="carRoute33"/>
+
+<route id="carRoute34" edges="-137550174 137550174" repeat="1" color="green" ></route>
+<vehicle id="34" depart="50" route="carRoute34"/>
+
+<route id="carRoute35" edges="39271417#1 E23 -E28 E25 E22 E3" repeat="1" color="green" ></route>
+<vehicle id="35" depart="50" route="carRoute35"/>
+
+<route id="carRoute36" edges="137541261 -137541261" repeat="1" color="green" ></route>
+<vehicle id="36" depart="50" route="carRoute36"/>
+
+<route id="carRoute37" edges="137541261 -E27 E26 27077573 -27077573 -E26 E27 -137541261" repeat="1" color="green" ></route>
+<vehicle id="37" depart="50" route="carRoute37"/>
+
+<route id="carRoute38" edges="-293795466#0 293795466#0" repeat="1" color="green" ></route>
+<vehicle id="38" depart="50" route="carRoute38"/>
+
+<route id="carRoute39" edges="-293795466#1 -E21 26813209#1 68248978 -E24 -E25 E26 137536159#0" repeat="1" color="green" ></route>
+<vehicle id="39" depart="50" route="carRoute39"/>
+
+<route id="carRoute40" edges="293795466#1 -137536159#0 -E26 E25 E24 -68248978 -26813209#1 E21" repeat="1" color="green" ></route>
+<vehicle id="40" depart="50" route="carRoute40"/>
+
+<route id="carRoute41" edges="-26813209#0 -293795460 -293795459 -150217424#2 -E33 -137536159#2 -137536159#1 -293795466#1 -E21" repeat="1" color="green" ></route>
+<vehicle id="41" depart="50" route="carRoute41"/>
+
+<route id="carRoute42" edges="-E32 E31 -137536159#3 -137536159#2 27077592#0 27077592#1" repeat="1" color="green" ></route>
+<vehicle id="42" depart="50" route="carRoute42"/>
+
+<route id="carRoute43" edges="-27077592#1 -27077592#0 137536159#2 137536159#3 -E31 E32" repeat="1" color="green" ></route>
+<vehicle id="43" depart="50" route="carRoute43"/>
+
+<route id="carRoute44" edges="-153023304#2 -40385969#1 -40385969#0 27077559 150217424#2 293795459 293795460" repeat="1" color="green" ></route>
+<vehicle id="44" depart="50" route="carRoute44"/>
+
+<route id="carRoute45" edges="-293795460 -293795459 -150217424#2 -27077559 40385969#0 40385969#1 153023304#2" repeat="1" color="green" ></route>
+<vehicle id="45" depart="50" route="carRoute45"/>
+
+<route id="carRoute46" edges="-27077559 -E15 E16 -137536159#3 E33" repeat="1" color="green" ></route>
+<vehicle id="46" depart="50" route="carRoute46"/>
+
+<route id="carRoute47" edges="-E33 137536159#3 -E16 E15 27077559" repeat="1" color="green" ></route>
+<vehicle id="47" depart="50" route="carRoute47"/>
+
+<route id="carRoute48" edges="137536159#7 -137536159#7" repeat="1" color="green" ></route>
+<vehicle id="48" depart="50" route="carRoute48"/>
+
+<route id="carRoute49" edges="27077563#0 27077563#1 27077563#2 27077563#3 -27077563#3 -27077563#2 -27077563#1 -27077563#0" repeat="1" color="green" ></route>
+<vehicle id="49" depart="50" route="carRoute49"/>
+
+<route id="carRoute50" edges="E17 -135933564#0 -E18 27077563#2" repeat="1" color="green" ></route>
+<vehicle id="50" depart="50" route="carRoute50"/>
+
+<route id="carRoute51" edges="153004139#0 E34 E35 153004139#4 153004139#5 -153004139#5 -153004139#4 -E35 -E34 -153004139#0" repeat="1" color="green" ></route>
+<vehicle id="51" depart="50" route="carRoute51"/>
+
+<route id="carRoute52" edges="153004139#0 E34 E13 E14 E16 -E31 137536159#6 27077563#0 27077563#1 27077563#2 E17 135933564#1 " repeat="1" color="green" ></route>
+<vehicle id="52" depart="50" route="carRoute52"/>
+
+<route id="carRoute53" edges="-27077558#1 -27077558#0 40385969#1 -E36" repeat="1" color="green" ></route>
+<vehicle id="53" depart="50" route="carRoute53"/>
+
+<route id="carRoute54" edges="E36 -135701426#2 -135701426#1 -135701426#0 -27077600 27077599#0" repeat="1" color="green" ></route>
+<vehicle id="54" depart="50" route="carRoute54"/>
+
+<route id="carRoute55" edges="127908451#1 24329084 26203520 -26203520 -24329084 -127908451#1" repeat="1" color="green" ></route>
+<vehicle id="55" depart="50" route="carRoute55"/>
+
+<route id="carRoute56" edges="-E35 E13 E14 E15 40385969#0 27077558#0 27077558#1 -27077599#0 -153004139#5 -153004139#4" repeat="1" color="green" ></route>
+<vehicle id="56" depart="50" route="carRoute56"/>
+
+<route id="carRoute57" edges="E8 E9 E10 -E7 E6 153018594 153018597 -153018597 -153018594 -E6 E7 -E10 -E9 -E8 -E11 E11" repeat="1" color="green" ></route>
+<vehicle id="57" depart="50" route="carRoute57"/>
+
+<route id="carRoute58" edges="153018597 39271417#0 39271417#1 -39271417#1 -39271417#0 -153018597" repeat="1" color="green" ></route>
+<vehicle id="58" depart="50" route="carRoute58"/>
+
+<route id="carRoute59" edges="-E6 E7 -E10 -E9 -E8 E8 E9 E10 -E7 E6" repeat="1" color="green" ></route>
+<vehicle id="59" depart="50" route="carRoute59"/>
+
+<!-- <route id="busRoute" edges="E3 E0 E1 E2" color="yellow" repeat="10" cycleTime="110">
+    </route> -->
+    <!-- <vehicle id="bus" type="bus" depart="0.00" line="42" route="busRoute"/> -->
+
+    <!-- <flow id="tram1" type="tram" begin="0.00" end="3600.00" period="300.00" line="23">
+        <route edges="-E4" color="cyan"/>
+        <stop busStop="A_tram1" duration="20.00" until="30.00"/>
+        <stop busStop="B_tram1" duration="20.00" until="45.00"/>
+    </flow>
+    <flow id="tram2" type="tram" begin="0.00" end="3600.00" period="300.00" line="23b">
+        <route edges="E4" color="cyan"/>
+        <stop busStop="B_tram2" duration="20.00" until="30.00"/>
+        <stop busStop="A_tram2" duration="20.00" until="45.00"/>
+    </flow> -->
+</routes>
